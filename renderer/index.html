@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Media Organizer - Electron (renderer)</title>
+  <link rel="stylesheet" href="./styles/styles.css" />
+</head>
+<body>
+  <div id="app" class="app-grid">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <div class="brand">
+        <h1>MediaOrg</h1>
+      </div>
+
+      <div class="sidebar-section">
+        <label class="btn" id="btn-open-folder" title="Wybierz folder z mediami">
+          📁 Wybierz folder
+        </label>
+        <input id="input-folder" type="file" webkitdirectory directory multiple style="display:none" />
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Filtry</h3>
+        <button class="filter-btn" data-filter="all" id="filter-all">Wszystkie</button>
+        <button class="filter-btn" data-filter="audio" id="filter-audio">Audio</button>
+        <button class="filter-btn" data-filter="video" id="filter-video">Wideo</button>
+        <button class="filter-btn" data-filter="favourites" id="filter-fav">Ulubione ★</button>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Quick tags</h3>
+        <div class="tag-list">
+          <button class="tag-btn" data-tag="to-delete">Do usunięcia</button>
+          <button class="tag-btn" data-tag="listened">Odsłuchane</button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <small>Wersja demo • Electron</small>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="search-wrap">
+          <input id="search-input" type="search" placeholder="Szukaj plików, artystów, tagów..." />
+        </div>
+        <div class="actions">
+          <button id="btn-scan" class="btn small">Skanuj folder</button>
+          <button id="btn-refresh" class="btn small">Odśwież</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- overview -->
+        <div class="overview">
+          <div class="stat">
+            <div class="stat-value" id="stat-files">0</div>
+            <div class="stat-label">Plików</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="stat-duration">0:00</div>
+            <div class="stat-label">Razem</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="stat-size">0 MB</div>
+            <div class="stat-label">Rozmiar</div>
+          </div>
+        </div>
+
+        <!-- file list header -->
+        <div class="list-header">
+          <div class="col name">Nazwa</div>
+          <div class="col meta">Metadane</div>
+          <div class="col tags">Tagi</div>
+          <div class="col actions">Akcje</div>
+        </div>
+
+        <!-- file list -->
+        <div id="file-list" class="file-list">
+        </div>
+      </section>
+    </main>
+
+    <!-- PLAYER (fixed bottom) -->
+    <div id="player" class="player">
+      <div class="player-left">
+        <img id="player-cover" class="cover" src="" alt="okładka" />
+        <div class="player-info">
+          <div id="player-title" class="player-title">—</div>
+          <div id="player-subtitle" class="player-subtitle">—</div>
+        </div>
+      </div>
+
+      <div class="player-center">
+        <button id="player-prev" class="player-btn">⟸</button>
+        <button id="player-play" class="player-btn">▶</button>
+        <button id="player-next" class="player-btn">⟹</button>
+        <div class="progress-wrap">
+          <input id="player-progress" type="range" min="0" max="100" value="0" />
+          <div class="time">
+            <span id="time-current">0:00</span> / <span id="time-total">0:00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="player-right">
+        <button id="btn-toggle-loop" class="player-btn" title="Loop">🔁</button>
+        <button id="btn-toggle-shuffle" class="player-btn" title="Shuffle">🔀</button>
+        <button id="btn-open-settings" class="player-btn" title="Ustawienia">⚙</button>
+      </div>
+    </div>
+
+    <!-- MODAL: file details (hidden by default) -->
+    <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal">
+        <header class="modal-header">
+          <h2 id="modal-title">Szczegóły pliku</h2>
+          <button id="modal-close" class="btn small">✕</button>
+        </header>
+        <div class="modal-body" id="modal-body">
+          <!-- JS wypełni -->
+        </div>
+        <footer class="modal-footer">
+          <button id="modal-delete" class="btn danger">Usuń plik</button>
+          <button id="modal-save-tags" class="btn">Zapisz tagi</button>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <script src="./renderer.js"></script>
+  <!-- NOTE: preload będzie udostępniać API (np. window.api.send/receive) -->
+  <script>
+    // Miejsca, w które możesz się podłączyć z JS (renderer script):
+    // - document.getElementById('btn-open-folder') => klik -> open dialog
+    // - document.getElementById('input-folder') => change -> local files (dev fallback)
+    // - document.getElementById('btn-scan') => wyślij ipc do main -> skanuj
+    // - document.getElementById('file-list') => wypełnić plikami (klasa .file-row)
+    // - elementy player: player-play, player-progress, etc.
+    //
+    // W finalnej aplikacji spodziewam się, że preload.js zapewni:
+    // window.api.invoke('open-folder') / window.api.send('scan-folder') / window.api.on('scan-progress', cb)
+    // Użyj tych hooków w JS.
+  </script>
+</body>
+</html>
