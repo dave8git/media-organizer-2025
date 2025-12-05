@@ -40,7 +40,7 @@ app.whenReady().then(() => {
     createWindow();
 
     // IPCs
-    ipcHandlers();
+    ipcHandlers(mainWindow);
 });
 
 app.on('before-quit', () => {

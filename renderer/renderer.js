@@ -47,15 +47,12 @@ let selectedFolder = null;
  */
 
 async function testIPC() {
-  try {
-    console.log(window.electronAPI);
-    const response = await window.electronAPI.ping();
-    console.log('✅ IPC działa! Odpowiedź:', response);
-    return true;
-  } catch (error) {
-    console.error('❌ IPC nie działa:', error);
-    return false;
-  }
+    // renderer tells preload: "Whenver you get ping, run THIS function."
+    window.electronAPI.ping((data) => {  // Renderer listens for ping and logs it // renderer registers a callback with preload
+        console.log("📨 ping:", data);
+    });
+
+    window.electronAPI.pong("pong from renderer 🏓"); // Now renderer will send pong 
 }
 
 // Uruchom test przy starcie
