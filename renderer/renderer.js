@@ -52,7 +52,7 @@ async function testIPC() {
         console.log("📨 ping:", data);
     });
 
-    window.electronAPI.pong("pong from renderer 🏓"); // Now renderer will send pong 
+    window.electronAPI.pong("pong from renderer 🏓"); // Now renderer will send pong
 }
 
 // Uruchom test przy starcie
