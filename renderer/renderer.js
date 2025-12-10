@@ -1,9 +1,5 @@
-// renderer.js - FAZA 1: Podstawy komunikacji IPC
-
-// ===========================================
-// DOM REFERENCES
-// ===========================================
-
+import { createFileRow } from './components/elements.js';
+import { formatBytes } from './utils/utils.js';
 // Sidebar
 const btnOpenFolder = document.getElementById('btn-open-folder');
 const inputFolder = document.getElementById('input-folder');
@@ -108,29 +104,7 @@ function displayFilesPlaceholder(files) {
   fileListContainer.innerHTML = '';
   
   files.forEach(file => {
-    const row = document.createElement('div');
-    row.className = 'file-row';
-    
-    row.innerHTML = `
-      <div class="col name">
-        <img class="thumb" src="" alt="" style="display:none" />
-        <div>
-          <div style="font-weight: 500">${file.name}</div>
-          <div style="font-size: 12px; color: var(--muted)">${formatBytes(file.size)}</div>
-        </div>
-      </div>
-      <div class="col meta">
-        <span style="color: var(--muted)">Brak metadanych</span>
-      </div>
-      <div class="col tags">
-        <span class="tag">nowy</span>
-      </div>
-      <div class="col actions">
-        <button title="Odtwórz">▶</button>
-        <button title="Szczegóły">ℹ</button>
-      </div>
-    `;
-    
+    const row = createFileRow(file);
     fileListContainer.appendChild(row);
   });
   
@@ -233,13 +207,13 @@ function updateStats(stats) {
 /**
  * Formatuje bajty na czytelną formę
  */
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-}
+// function formatBytes(bytes) {
+//   if (bytes === 0) return '0 B';
+//   const k = 1024;
+//   const sizes = ['B', 'KB', 'MB', 'GB'];
+//   const i = Math.floor(Math.log(bytes) / Math.log(k));
+//   return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+// }
 
 /**
  * Formatuje sekundy na MM:SS
