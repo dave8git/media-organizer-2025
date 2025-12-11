@@ -7,12 +7,14 @@ let db = null;
 function initDatabase() {
     const userDataPath = app.getPath('userData');
     const dbPath = path.join(userDataPath, 'ipc-playground.db');
-    console.log('Database path:', 'ipc-playground.db');
+    console.log('Database path:', dbPath);
+    
     db = new Database(dbPath);
     db.pragma('journal_mode = WAL'); // WAL mode for better performance 
+    
     db.exec(`
         CREATE TABLE IF NOT EXISTS ipc_logs (
-            id INTEGER PRMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp TEXT NOT NULL,
             direction TEXT NOT NULL,
             channel TEXT NOT NULL,
@@ -37,13 +39,13 @@ function initDatabase() {
         CREATE INDEX IF NOT EXISTS idx_ipc_logs_channel ON ipc_logs(channel);
     `);
 
-    console.log('Database initialized succesfully');
+    console.log('Database initialized successfully');
     return db;
 }
 
 function getDatabase() {
     if (!db) {
-        throw new Error('Database not initilized. Call initDatabase() first.');
+        throw new Error('Database not initialized. Call initDatabase() first.');
     }
     return db;
 }
@@ -51,9 +53,9 @@ function getDatabase() {
 // Log IPC message
 function logIPCMessage(direction, channel, message) {
     const stmt = db.prepare(`
-         INSERT INTO ipc_logs (timestamp, direction, channel, message)
-            VALUES (?, ?, ?, ?)
-        `);
+        INSERT INTO ipc_logs (timestamp, direction, channel, message)
+        VALUES (?, ?, ?, ?)
+    `);
 
     const timestamp = new Date().toISOString();
     const messageStr = typeof message === 'object' ? JSON.stringify(message) : String(message);
@@ -62,10 +64,10 @@ function logIPCMessage(direction, channel, message) {
 
 function getRecentLogs(limit = 50) {
     const stmt = db.prepare(`
-                    SELECT * FROM ipc_logs
-                    ORDER BY id DESC
-                    LIMIT ?
-                `);
+        SELECT * FROM ipc_logs
+        ORDER BY id DESC
+        LIMIT ?
+    `);
 
     return stmt.all(limit);
 }
@@ -73,12 +75,12 @@ function getRecentLogs(limit = 50) {
 // Get logs by channel
 function getLogsByChannel(channel) {
     const stmt = db.prepare(`
-            SELECT * FROM ipc_logs
-            WHERE channel = ?
-            ORDER BY id DESC
-        `);
+        SELECT * FROM ipc_logs
+        WHERE channel = ?
+        ORDER BY id DESC
+    `);
 
-        return stmt.all(channel);
+    return stmt.all(channel);
 }
 
 function getStatistics() {
@@ -87,12 +89,13 @@ function getStatistics() {
         SELECT channel, COUNT(*) as count
         FROM ipc_logs
         GROUP BY channel
-        `).all();
+    `).all();
+    
     const byDirection = db.prepare(`
         SELECT direction, COUNT(*) as count
         FROM ipc_logs
         GROUP BY direction
-        `).all();
+    `).all();
 
     return {
         totalMessages: totalMessages.count,
@@ -107,12 +110,68 @@ function clearOldLogs(daysToKeep = 30) {
         DELETE FROM ipc_logs
         WHERE created_at < datetime('now', '-' || ? || ' days')
     `);
+    
     const result = stmt.run(daysToKeep);
     return result.changes;
 }
 
 // Settings management
-function gettingSetting(key, defaultValue = null) {
+function getSetting(key, defaultValue = null) {
     const stmt = db.prepare('SELECT value FROM settings WHERE key = ?');
     const result = stmt.get(key);
+    return result ? result.value : defaultValue;
 }
+
+function setSetting(key, value) {
+    const stmt = db.prepare(`
+        INSERT INTO settings (key, value, updated_at)
+        VALUES (?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(key) DO UPDATE SET
+            value = excluded.value,
+            updated_at = CURRENT_TIMESTAMP
+    `);
+    
+    stmt.run(key, value);
+}
+
+function startSession() {
+    const stmt = db.prepare('INSERT INTO sessions DEFAULT VALUES');
+    const result = stmt.run();
+    return result.lastInsertRowid;
+}
+
+function endSession(sessionId) {
+    const totalMessages = db.prepare('SELECT COUNT(*) as count FROM ipc_logs').get();
+    
+    const stmt = db.prepare(`
+        UPDATE sessions
+        SET ended_at = CURRENT_TIMESTAMP,
+            total_messages = ?
+        WHERE id = ?
+    `);
+    
+    stmt.run(totalMessages.count, sessionId);
+}
+
+function closeDatabase() {
+    if (db) {
+        db.close();
+        db = null;
+        console.log('Database closed');
+    }
+}
+
+module.exports = {
+    initDatabase,
+    getDatabase,
+    logIPCMessage,
+    getRecentLogs,
+    getLogsByChannel,
+    getStatistics,
+    clearOldLogs,
+    getSetting,
+    setSetting,
+    startSession,
+    endSession,
+    closeDatabase
+};

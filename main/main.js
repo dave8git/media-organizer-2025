@@ -1,9 +1,11 @@
 // main.js 
 const { app, BrowserWindow, ipcMain } = require('electron');
+const db = require('./db.js');
 const path = require('path');
 const ipcHandlers = require('./ipcHandlers');
+const ipcDBHandlers = require('./ipcDBHandlers');
 let mainWindow;
-
+let currentSessionId = null;
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1400,
@@ -37,13 +39,21 @@ function createWindow() {
 // lifecycle
 
 app.whenReady().then(() => {
+    db.initDatabase();
+    currentSessionId = db.startSession();
+    console.log('currentSessionId', currentSessionId);
     createWindow();
 
     // IPCs
     ipcHandlers(mainWindow);
+    ipcDBHandlers();
 });
 
 app.on('before-quit', () => {
+    if(currentSessionId) {
+        db.endSession(currentSessionId);
+    }
+    db.closeDatabase();
     console.log('Closing application...');
 });
 
