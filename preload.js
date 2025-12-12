@@ -11,4 +11,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // so as reference it's called here in preload but it will execute in renderer context
     // data is coming from main: mainWindow.webContents.send('ping', "hello renderer 👋");
     pong: (msg) => ipcRenderer.send('pong', msg),
+    getRecentLogs: (limit) => ipcRenderer.invoke('get-recent-logs', limit),
+    getStatistics: () => ipcRenderer.invoke('get-statistics'),
+    clearOldLogs:  (days) => ipcRenderer.invoke('clear-old-logs', days),
+    getSetting: (key) => ipcRenderer.invoke('get-setting', key),
+    setSetting: (key, value) => ipcRenderer.invoke('set-setting', { key, value })
 }); 
