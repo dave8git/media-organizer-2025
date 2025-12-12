@@ -4,6 +4,7 @@ const db = require('./db.js');
 const path = require('path');
 const ipcHandlers = require('./ipcHandlers');
 const ipcDBHandlers = require('./ipcDBHandlers');
+const testIPC = require('./ipcTest.js');
 let mainWindow;
 let currentSessionId = null;
 function createWindow() {
@@ -37,7 +38,6 @@ function createWindow() {
 }
 
 // lifecycle
-
 app.whenReady().then(() => {
     db.initDatabase();
     currentSessionId = db.startSession();
@@ -45,6 +45,7 @@ app.whenReady().then(() => {
     createWindow();
 
     // IPCs
+    testIPC(mainWindow);
     ipcHandlers(mainWindow);
     ipcDBHandlers();
 });
