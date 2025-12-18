@@ -1,6 +1,6 @@
 /* DOM selectors */
 // Sidebar
-export const btnOpenFolder = document.getElementById('btn-open-folder');
+//export const btnOpenFolder = document.getElementById('btn-open-folder');
 export const inputFolder = document.getElementById('input-folder');
 
 // Filters
@@ -23,3 +23,6 @@ export const fileListContainer = document.getElementById('file-list');
 export const statFiles = document.getElementById('stat-files');
 export const statDuration = document.getElementById('stat-duration');
 export const statSize = document.getElementById('stat-size');
+
+// Upload
+export const selectFolder = document.getElementById('btn-open-folder');

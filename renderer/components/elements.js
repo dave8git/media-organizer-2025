@@ -1,9 +1,10 @@
 import { formatBytes } from "../utils/utils.js";
 
-export function createFileRow(file) {
+export function createFileRow(file, index) {
     console.log('createFileRow');
     const row = document.createElement('div');
     row.className = 'file-row';
+    row.dataset.index = index;
 
     const colName = document.createElement('div');
     colName.className = 'col name';
@@ -15,7 +16,7 @@ export function createFileRow(file) {
     const nameWrapper = document.createElement('div');
     const fileName = document.createElement('div');
     fileName.style.fontWeight = '500';
-    fileName.textContent = file.name;
+    fileName.textContent = file.metadata?.common?.title || file.name || 'Unknown';
 
     const fileSize = document.createElement('div');
     fileSize.style.fontSize = '12px';
@@ -33,7 +34,14 @@ export function createFileRow(file) {
 
     const metaText = document.createElement('span');
     metaText.style.color = 'var(--muted)';
-    metaText.textContent = 'Brak metadanych';
+    //metaText.textContent = 'Brak metadanych';
+     if (file.metadata?.common) {
+        const artist = file.metadata.common.artist || '';
+        const album = file.metadata.common.album || '';
+        metaText.textContent = [artist, album].filter(Boolean).join(' • ') || 'Brak metadanych';
+    } else {
+        metaText.textContent = 'Brak metadanych';
+    }
 
     colMeta.appendChild(metaText);
 
@@ -50,10 +58,12 @@ export function createFileRow(file) {
     colActions.className = 'col actions';
 
     const playBtn = document.createElement('button');
+    playBtn.dataset.action = 'play';
     playBtn.title = 'Odtwórz';
     playBtn.textContent = '▶';
 
     const infoBtn = document.createElement('button');
+    infoBtn.dataset.action = 'info';
     infoBtn.title = 'Szczegóły';
     infoBtn.textContent = 'ℹ';
 

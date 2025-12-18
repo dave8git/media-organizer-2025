@@ -23,6 +23,8 @@
     "electron-rebuild": "^3.2.9"
   },
   "dependencies": {
-    "better-sqlite3": "^9.2.2"
+    "better-sqlite3": "^9.2.2",
+    "fs": "^0.0.1-security",
+    "music-metadata": "^7.14.0"
   }
 }
