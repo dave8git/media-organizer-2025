@@ -142,7 +142,7 @@ class PlayerController {
     }
     // update playlist when files change
     updatePlaylist(files) {
-        playerService.setPlaylist(files);j
+        playerService.setPlaylist(files);
     }
     
     destroy() {

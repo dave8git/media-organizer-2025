@@ -1,8 +1,9 @@
-import { setCurrentFilter } from "./state.js";
+//import { setCurrentFilter } from "./state.js";
+import appState from "./state.js";
 import { filterAll, filterAudio, filterVideo, filterFav } from "./dom.js";
 
 function setFilter(filterType) {
-  setCurrentFilter(filterType);
+  appState.setCurrentFilter(filterType);
   
   // Update UI
   document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -10,7 +11,6 @@ function setFilter(filterType) {
   });
   document.querySelector(`[data-filter="${filterType}"]`)?.classList.add('active');
   
-  // TODO FAZA 3: Filtrowanie rzeczywistych danych
   console.log('🔎 Filtr zmieniony na:', filterType);
 }
 

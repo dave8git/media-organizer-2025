@@ -1,28 +1,27 @@
 /* Search */ 
 import { searchInput } from "./dom.js";
-import { setSearchTerm } from "./state.js";
+import appState from './state.js';
 
-// searchInput.addEventListener('input', (e) => {
-//   currentSearchTerm = e.target.value.toLowerCase();
-//   console.log('🔍 Szukaj:', currentSearchTerm);
-//   // TODO FAZA 3: Filtrowanie wyników
-// });
+class SearchController {
+    constructor() {
+        this.init();
+    }
 
-function handleSearch(searchValue) {
-    const lowerCaseValue = searchValue.toLowerCase();
-    setSearchTerm(lowerCaseValue);
-    console.log(`Search term updated: ${lowerCaseValue}`);
+    init() {
+        if (!searchInput) return;
+        searchInput.addEventListener('input', (e) => {
+            this.handleSearch(e.target.value);
+        });
+    }
+    handleSearch(searchValue) {
+        const value = searchValue.toLowerCase();
+        appState.setSearchTerm(value);
+        console.log(`🔍 Search term updated: ${value}`);
+    }
 }
 
-function initSearch() {
-    searchInput.addEventListener('input', (e) => {
-        handleSearch(e.target.value);
-    });
-}
-
-export {
-    handleSearch,
-    initSearch
-}
+const searchController = new SearchController();
+export default searchController;
+export { SearchController };
 
 // wyszukiwanie odbywa się w czasie rzeczywistym

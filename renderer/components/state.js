@@ -1,47 +1,52 @@
 /* STATE */
+class AppState {
+    constructor() {
+        this.reset();
+    }
 
-const appState = {
-    currentFilter: 'all',
-    currentSearchTerm: '',
-    allFiles: [],
-    selectedFolder: null
+    /* Getters */
+    getCurrentFilter() {
+        return this.currentFilter;
+    }
+
+    getSearchTerm() {
+        return this.currentSearchTerm;
+    } 
+
+    getAllFiles() {
+        return this.allFiles;
+    }
+
+    getSelectedFolder() {
+        this.selectedFolder;
+    }
+
+    /* Setters */
+    setCurrentFilter(filterType) { 
+        this.currentFilter = filterType;
+    }
+
+    setSearchTerm(term) {
+        this.searchTerm = term;
+    }
+
+    setAllFiles(files) {
+        this.allFiles = files;
+    }
+
+    setSelectedFolder(folderPath) {
+        this.selectedFolder = folderPath;
+    }
+
+    /* Helpers */
+    reset() {
+        this.currentFilter = 'all';
+        this.currentSearchTerm = '';
+        this.allFiles = [];
+        this.selectedFolder = null;
+    }
 }
 
-export function getCurrentFilter() {
-    return appState.currentFilter;
-}
-
-export function getSearchTerm() {
-    return appState.currentSearchTerm;
-}
-
-export function getAllFiles() {
-    return appState.allFiles;
-}
-
-export function getSelectedFolder() {
-    return appState.selectedFolder;
-}
-
-export function setCurrentFilter(filterType) {
-    appState.currentFilter = filterType;
-}
-
-export function setSearchTerm(term) {
-    appState.currentSearchTerm = term;
-}
-
-export function setAllFiles(files) {
-    appState.allFiles = files;
-}
-
-export function setSelectedFolder(folderPath) {
-    appState.selectedFolder = folderPath;
-}
-
-export function resetState() {
-    appState.currentFilter = 'all';
-    appState.currentSearchTerm = '';
-    appState.allFiles = [];
-    appState.selectedFolder = null;
-}
+const appState = new AppState();
+export default appState;
+export { AppState };
